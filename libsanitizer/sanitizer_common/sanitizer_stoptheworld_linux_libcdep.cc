@@ -47,6 +47,11 @@
 # undef sa_sigaction
 #endif
 
+#if !SANITIZER_ANDROID
+#include <sys/signal.h>
+#endif
+
+
 #include "sanitizer_common.h"
 #include "sanitizer_flags.h"
 #include "sanitizer_libc.h"
@@ -267,7 +272,7 @@ static int TracerThread(void* argument) {
 
   // Alternate stack for signal handling.
   InternalScopedBuffer<char> handler_stack_memory(kHandlerStackSize);
-  struct sigaltstack handler_stack;
+  stack_t handler_stack;
   internal_memset(&handler_stack, 0, sizeof(handler_stack));
   handler_stack.ss_sp = handler_stack_memory.data();
   handler_stack.ss_size = kHandlerStackSize;
